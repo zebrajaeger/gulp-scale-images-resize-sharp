@@ -1,8 +1,8 @@
 'use strict';
 
 const sharp = require('sharp');
-
-const SCALE_INFO = require('./scale-info');
+const createPlugin = require('@zebrajaeger/gulp-scale-images');
+const {SCALE_INFO, DEFAULT_COMPUTE_FILENAME} = createPlugin;
 
 const resizeSharp = (file, cfg, cb) => {
 	const task = sharp(file.contents);

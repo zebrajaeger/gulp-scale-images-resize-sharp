@@ -8,9 +8,9 @@ const pEvent = require('p-event');
 const vFile = require('vinyl-file');
 const Vinyl = require('vinyl');
 
-const createPlugin = require('..');
-const {SCALE_INFO} = createPlugin;
-const defaultComputeFileName = require('../lib/compute-file-name');
+const createPlugin = require('@zebrajaeger/gulp-scale-images');
+const {SCALE_INFO, DEFAULT_COMPUTE_FILENAME} = createPlugin;
+const resizeSharp = require('../index');
 
 const src = path.join(__dirname, 'teacup-and-saucer.jpg');
 
@@ -27,7 +27,7 @@ const jpeg700 = {
 const isObj = o => o !== null && 'object' === typeof o && !Array.isArray(o);
 const pTest = pifyTape(test);
 
-pTest('emits erros on invalid input', co.wrap(function* (t) {
+pTest('emits errors on invalid input', co.wrap(function* (t) {
 	const plugin = createPlugin();
 	const writeImmediate = d => setImmediate(() => plugin.write(d));
 
@@ -58,7 +58,7 @@ pTest('emits erros on invalid input', co.wrap(function* (t) {
 }));
 
 pTest('skips directories', co.wrap(function* (t) {
-	const plugin = createPlugin([png500]);
+	const plugin = createPlugin(resizeSharp,[png500]);
 	const dir = new Vinyl({
 		path: __dirname,
 		stat: {
@@ -79,7 +79,7 @@ pTest('skips directories', co.wrap(function* (t) {
 }));
 
 pTest('1 file, 500x500 png', co.wrap(function* (t) {
-	const plugin = createPlugin();
+	const plugin = createPlugin(resizeSharp);
 	const input = yield vFile.read(src);
 	input.scale = png500;
 
@@ -109,7 +109,7 @@ pTest('1 file, 500x500 png', co.wrap(function* (t) {
 }));
 
 pTest('1 file, 500x500 png, 700x? jpeg', co.wrap(function* (t) {
-	const plugin = createPlugin();
+	const plugin = createPlugin(resizeSharp);
 
 	const in1 = yield vFile.read(src);
 	in1.scale = png500;
@@ -150,8 +150,8 @@ pTest('1 file, 500x500 png, 700x? jpeg', co.wrap(function* (t) {
 	t.end()
 }));
 
-test('defaultComputeFileName', (t) => {
-	const c = defaultComputeFileName;
+test('DEFAULT_COMPUTE_FILENAME', (t) => {
+	const c = DEFAULT_COMPUTE_FILENAME;
 	const file = new Vinyl({
 		cwd: '/',
 		base: '/foo/',
